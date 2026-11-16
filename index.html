@@ -16345,7 +16345,7 @@ function fxFill(onlyData){const C=xiCache();let n=0;const out=[];
 function fxWindow(kind){const tx=fxTx();const wk=kind+CAR.season;if(tx.win[wk])return null;tx.win[wk]=1;
   const C=xiCache();const by={};const ids=fxClubs();ids.forEach(id=>{by[id]=(C.by[id]||[]).slice()});const st={};ids.forEach(id=>st[id]=clubStr(id));
   const N=kind==='S'?70:26;const moved=new Set();const done=[];const nb={},ns={};const bud={};
-  ids.forEach(id=>{const rich=isEu(id)&&teamOf(id).cc==='EN'?1.5:1;bud[id]=220*Math.pow(1.13,st[id]-60)*rich*(.5+Math.random()*.9)*(kind==='S'?1:.45)});
+  ids.forEach(id=>{const rich=isEu(id)&&teamOf(id).cc==='EN'?1.5:1;bud[id]=220*Math.pow(1.13,st[id]-60)*rich*(.5+Math.random()*.9)*(kind==='S'?2.4:1.1)});
   const starter=(p,c)=>{const xi=clubXIc(c);return xi.gk&&xi.gk.n===p.n||xi.f.some(q=>q.n===p.n)};
   const pickW=()=>{let tot=0;const w=ids.map(id=>{const x=Math.exp((st[id]-62)/7);tot+=x;return x});let r=Math.random()*tot;for(let i=0;i<ids.length;i++){r-=w[i];if(r<=0)return ids[i]}return ids[0]};
   for(let t=0;t<N*3&&done.length<N;t++){const b=pickW();if((nb[b]||0)>=(kind==='S'?3:1))continue;const B=by[b];const f=B.filter(p=>!p.gk),g=B.filter(p=>p.gk);const wantGK=g.length&&g[0].o<st[b]-3&&Math.random()<.35;
@@ -24533,6 +24533,93 @@ const _mf94=m81Frame;m81Frame=function(dt,snap){const S=[];try{const d0=Math.min
     if(snap||P.yw94==null||!P.wrap.visible)P.yw94=tgt;else{let d=tgt-P.yw94;d=Math.atan2(Math.sin(d),Math.cos(d));const act=P.H._act81||0;const mx=(FREE93.has(act)?16:8)*d0;P.yw94+=clamp(d,-mx,mx)}
     S.push([g,tgt]);g.rotation.y=P.yw94}}catch(e){}
   try{return _mf94.apply(this,arguments)}finally{S.forEach(([g,t])=>{g.rotation.y=t})}};
+
+
+/* ================= v9.5: Transfers ab Saison 1, Musik im Hintergrund-Modus, Kalender-Logos, Wettbewerbs-Walze, Sponsor-Hinweis ================= */
+(function(){const st=document.createElement('style');st.textContent=`
+/* Kalender: größere Logos */
+.c68g span{min-height:60px;padding-top:5px}
+.c68g span em{margin-top:4px;gap:2px;flex-wrap:wrap}
+.c68g>span em .cl71,.c68g>span em img:not(.coa){width:28px!important;height:28px!important}
+.c68g>span em .em71{width:28px!important;height:28px!important;min-height:0!important;padding:0!important;background:none!important;border-radius:0!important;display:grid!important;place-items:center;font-size:21px!important;line-height:1}
+.c68g>span em .badge{width:30px!important;height:30px!important;transform:none!important;margin:0!important}
+.c68g>span em .badge>span{min-height:0!important;padding:1px 3px!important;font-size:8px!important;border-radius:4px!important;background:rgba(8,10,16,.72)!important}
+.c68g>span em .badge .coa{inset:2px!important;width:calc(100% - 4px)!important;height:calc(100% - 4px)!important}
+/* Wettbewerbs-Walze: flach, ohne Verzerrung */
+.wp93{height:176px;perspective:none}
+.wp93pad{height:66px}
+.wp93band{top:66px;height:44px;left:8px;right:8px}
+.wp93i{display:grid!important;grid-template-columns:28px minmax(0,1fr) auto;align-items:center;justify-items:start;gap:12px;height:44px;padding:0 18px;font-size:16px!important;text-align:left;transform:none!important;transition:opacity .12s,color .12s}
+.wp93i.mid{font-size:16px!important;color:#fff}
+.wp93i>span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.wp93i>:first-child:not(span):not(i){width:26px;height:26px;object-fit:contain;justify-self:center}
+.wp93i .clogo{width:26px;height:26px;padding:2px;box-sizing:border-box}
+.wp93i .wp95ph{width:26px;height:26px;border-radius:7px;background:rgba(255,255,255,.1);display:grid;place-items:center;font-style:normal;font-size:11px;font-weight:900;color:rgba(255,255,255,.75)}
+.wp93me{position:static!important;margin:0!important;justify-self:end}
+/* Hinweis mit Logo */
+#toast .em .lg93{--s:34px;border-radius:9px}
+`;document.head.appendChild(st)})();
+
+/* ---------- 1. Transfers: Sommerfenster auch in der ersten Saison ---------- */
+let fx95Busy=false;
+function fx95Summer(){if(fx95Busy)return;try{if(typeof CAR==='undefined'||!CAR||CAR.phase!=='season')return;const tx=fxTx();if(tx.win['S'+CAR.season])return;
+    fx95Busy=true;fxFill(true);const r=fxWindow('S');if(r&&r.done&&r.done.length)fxNews('󰄼','Sommer-Transferfenster: '+r.done.length+' Wechsel in Europa','s');carSave()}catch(e){console.error('fx95',e)}finally{fx95Busy=false}}
+const _carNew95=carNew;carNew=function(){const r=_carNew95.apply(this,arguments);try{fx95Summer()}catch(e){}return r};
+const _carRender95=carRender;carRender=function(){const r=_carRender95.apply(this,arguments);
+  try{if(CAR&&CAR.phase==='season'&&!fx95Busy&&!fxTx().win['S'+CAR.season])setTimeout(()=>{if(CAR&&!fxTx().win['S'+CAR.season]){fx95Summer();_carRender95()}},0)}catch(e){}return r};
+
+/* ---------- 2. Musik: Hintergrund-Modus statt Mediaplayer ---------- */
+/* „ambient“: keine Anzeige in der Dynamic Island/Sperrbildschirm, Spotify & Co. laufen weiter, der Stummschalter schaltet das Spiel stumm */
+try{if(navigator.audioSession)navigator.audioSession.type='ambient'}catch(e){}
+const _audioOn95=audioOn;audioOn=function(){const a=_audioOn95.apply(this,arguments);try{if(a&&a.state==='interrupted')a.resume()}catch(e){}return a};
+/* Alle Klänge über Web Audio statt <audio>: so meldet iOS keinen Mediaplayer an */
+const BUF95={};
+function buf95(url){if(!BUF95[url]){const ac=audioOn();if(!ac)return Promise.reject(0);
+    BUF95[url]=fetch(url,{mode:'cors'}).then(r=>{if(!r.ok)throw new Error('http '+r.status);return r.arrayBuffer()}).then(b=>new Promise((res,rej)=>ac.decodeAudioData(b,res,rej)))}
+  return BUF95[url]}
+const BIG95=new Set(['mus','crowd']);
+snd68El=function(key,url,loop){if(S68.el[key])return S68.el[key];const ac=audioOn();let g=null;if(ac){g=ac.createGain();g.gain.value=0;g.connect(ac.destination)}
+  const P={src:url,loop:!!loop,paused:true,ended:false,_bad:0,_ls:{},_n:null,_nurl:null,_tok:0,
+    addEventListener(t,f){(this._ls[t]=this._ls[t]||[]).push(f)},
+    _emit(t){(this._ls[t]||[]).forEach(f=>{try{f()}catch(e){}})},
+    _stopNode(){const n=this._n;this._n=null;this._nurl=null;if(n){try{n.onended=null;n.stop()}catch(e){}}},
+    play(){const me=this;const ac=audioOn();if(!ac||!S68.g[key])return Promise.resolve();me.paused=false;me.ended=false;const url=me.src;
+      if(me._n&&me._nurl===url)return Promise.resolve();me._stopNode();const tok=++me._tok;
+      return buf95(url).then(buf=>{if(tok!==me._tok||me.paused)return;const n=ac.createBufferSource();n.buffer=buf;n.loop=me.loop;n.connect(S68.g[key]);
+          n.onended=()=>{if(me._n!==n)return;me._n=null;me._nurl=null;me.paused=true;me.ended=true;me._emit('ended')};me._n=n;me._nurl=url;n.start();
+          if(BIG95.has(key))delete BUF95[url]})
+        .catch(()=>{delete BUF95[url];if(tok!==me._tok)return;me.paused=true;
+          /* Musik: kaputten Titel überspringen statt ganz zu verstummen */
+          if(key==='mus'&&(me._skip=(me._skip||0)+1)<SND68.music.length){S68.mi++;me.src=sndUrl68(SND68.music[S68.mi%SND68.music.length][0]);setTimeout(()=>snd68Music(),300)}else me._bad=1})},
+    pause(){this.paused=true;this._tok++;this._stopNode()}};
+  S68.el[key]=P;S68.g[key]=g;return P};
+/* Ausblenden zuverlässig beenden (ein späteres Abspielen bricht das Stoppen ab) */
+const _snd68Play95=snd68Play;snd68Play=function(key){const a=S68.el[key];if(a)a._st=(a._st||0)+1;return _snd68Play95.apply(this,arguments)};
+snd68Stop=function(key,dur){const a=S68.el[key];if(!a)return;snd68Vol(key,0,dur||.8);const tok=a._st=(a._st||0)+1;setTimeout(()=>{if(a._st===tok)try{a.pause()}catch(e){}},(dur||.8)*1000+120)};
+/* Bereits angelegte <audio>-Elemente (alte Sitzung) stoppen und ersetzen */
+try{Object.keys(S68.el).forEach(k=>{const a=S68.el[k];if(a&&a instanceof HTMLMediaElement){try{a.pause();a.removeAttribute('src');a.load()}catch(e){}delete S68.el[k];delete S68.g[k]}})}catch(e){}
+
+/* ---------- 3. Sponsor-Hinweis: Logo statt HTML-Text ---------- */
+const _miniToast95=miniToast;miniToast=function(em,t1,t2,dur){const r=_miniToast95.apply(this,arguments);
+  try{const s=String(em==null?'':em);if(/^\s*</.test(s)){const el=document.querySelector('#toast .em');if(el)el.innerHTML=s}
+    const t=document.querySelector('#toast .t2');if(t&&/<[a-z]/i.test(String(t2||'')))t.textContent=String(t2).replace(/<[^>]*>/g,'')}catch(e){}return r};
+
+/* ---------- 4. Wettbewerbs-Walze: flach, sauber zentriert ---------- */
+const WP95H=44;
+const _tl93Bar95=tl93Bar;tl93Bar=function(){let h=_tl93Bar95.apply(this,arguments);
+  /* fehlendes Logo: Platzhalter mit Kürzel, damit die Spalten sauber bleiben */
+  h=h.replace(/<button data-v="([^"]+)" class="(wp93i[^"]*)"><span>([^<]+)<\/span>/g,(m,v,c,n)=>'<button data-v="'+v+'" class="'+c+'"><i class="wp95ph">'+esc(n.replace(/[^A-ZÄÖÜ0-9]/g,'').slice(0,3)||n.slice(0,2))+'</i><span>'+n+'</span>');return h};
+wp93Paint=function(s){const c=s.scrollTop+s.clientHeight/2;s.querySelectorAll('.wp93i').forEach(b=>{const m=b.offsetTop+b.offsetHeight/2;const a=Math.min(Math.abs((m-c)/WP95H),2);
+  b.style.transform='';b.style.opacity=(1-a*.32).toFixed(2);b.classList.toggle('mid',a<.5)})};
+wp93Init=function(){const s=document.getElementById('wp93s');if(!s||s._wp)return;s._wp=1;const items=[...s.querySelectorAll('.wp93i')];let i0=items.findIndex(b=>b.classList.contains('on'));if(i0<0)i0=0;
+  s.scrollTop=i0*WP95H;wp93Paint(s);let tm=null,touch=false;
+  const settle=()=>{if(touch){tm=setTimeout(settle,120);return}const i=clamp(Math.round(s.scrollTop/WP95H),0,items.length-1);const v=items[i].dataset.v;
+    if(Math.abs(s.scrollTop-i*WP95H)>2){s.scrollTo({top:i*WP95H,behavior:'smooth'});tm=setTimeout(settle,200);return}
+    if(String(v)!==String(tl93Cur())){try{sfx('tap')}catch(e){}carTabL=isNaN(+v)?v:+v;carEuSel=null;carCupSel=null;carRender()}};
+  s.addEventListener('scroll',()=>{wp93Paint(s);clearTimeout(tm);tm=setTimeout(settle,150)},{passive:true});
+  s.addEventListener('touchstart',()=>{touch=true},{passive:true});s.addEventListener('touchend',()=>{touch=false},{passive:true});
+  items.forEach((b,i)=>b.addEventListener('click',e=>{e.stopImmediatePropagation();e.preventDefault();s.scrollTo({top:i*WP95H,behavior:'smooth'});clearTimeout(tm);tm=setTimeout(settle,280)},true))};
+
 
 /* ================= Boot ================= */
 {const app=$('#app');const fix=()=>{if(app.scrollTop||app.scrollLeft){app.scrollTop=0;app.scrollLeft=0}if(document.scrollingElement&&(document.scrollingElement.scrollTop||document.scrollingElement.scrollLeft))window.scrollTo(0,0)};app.addEventListener('scroll',fix,{passive:true});window.addEventListener('scroll',fix,{passive:true});setInterval(fix,500)}
