@@ -16697,7 +16697,7 @@ function ntSquad_v5(c){if(NT_C[c])return NT_C[c];const a=(ntIx()[c]||[]).slice()
 function ntEA(c){const s=ntSquad(c);return Math.round(xiOVR(s.f,s.gk))}
 const ntRt=c=>Math.round(40+(ntEA(c)-55)*1.6);
 const ntName=c=>(NT_INFO[c]||[c])[0];
-const ntBadge=(c,cls)=>'<div class="badge club ntb '+(cls||'')+'"><span>'+natFlag(c)+'</span></div>';
+let ntBadge=(c,cls)=>'<div class="badge club ntb '+(cls||'')+'"><span>'+natFlag(c)+'</span></div>';
 const ntSide=c=>({name:ntName(c),short:c,id:'n'+c,badge:ntBadge(c,'mb'),cols:NT_INFO[c]?[NT_INFO[c][1],NT_INFO[c][2]]:null});
 function ntTeam(c){const s=ntSquad(c);const P=p=>({n:p.n,no:p.no,o:p.o,pra:p.pra,kra:p.kra,ner:p.ner,gk:!!p.gk});return{sh:s.f.map(P),gk:P(s.gk)}}
 /* ---- Turnierlogik ---- */
@@ -24359,7 +24359,7 @@ function ntTick93(){if(!CAR)return 0;ntBuild93();const N=N93();const today=calTo
     if((m.h==='GER'||m.a==='GER')&&!N.seen[m.d]){N.seen[m.d]=1;try{const w=m.h==='GER'?m.gh-m.ga:m.ga-m.gh;post72({a:['kicker','sportschau','bild'][n%3],t:CN93[m.c]+': '+ntName(m.h)+' – '+ntName(m.a)+' '+m.gh+':'+m.ga+(w>0?' – Sieg für Klopps Team':w<0?' – Rückschlag für Klopp':' – Remis')})}catch(e){}}});
   ntNlNext93();if(n)try{carSave()}catch(e){}return n}
 /* ---------- Ansicht ---------- */
-const fl93=c=>'<i class="nf93">'+natFlag(c)+'</i>';
+let fl93=c=>'<i class="nf93">'+natFlag(c)+'</i>';
 function ntRow93(m){const de=m.h==='GER'||m.a==='GER';const dt=d93(m.d);const dd=dt.toLocaleDateString('de-DE',{day:'numeric',month:'short',year:'2-digit'});
   const sc=m.done?'<b>'+m.gh+':'+m.ga+'</b>'+(m.agg?'<small>'+(m.w==='GER'?'weiter':'raus')+(m.pen!=null&&m.agg[0]===m.agg[1]?' i. E.':'')+'</small>':''):'<em>'+dt.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'})+'</em>';
   return '<div class="nt93m'+(de?' de':'')+(m.done?'':' open')+'"><span class="d">'+dd+'</span><span class="h">'+esc(ntName(m.h))+fl93(m.h)+'</span><span class="s">'+sc+'</span><span class="a">'+fl93(m.a)+esc(ntName(m.a))+'</span>'+(m.v&&de?'<small class="v">'+esc(m.v)+'</small>':'')+'</div>'}
@@ -24409,12 +24409,7 @@ const _moreHTML93=moreHTML;moreHTML=function(){const h=_moreHTML93.apply(this,ar
     const nt='<button class="mrow press" data-go68="nt93"><span class="mi mi80">'+(typeof bfi80==='function'?bfi80('trophy'):'󰄁')+'</span><span class="mt"><b>Nationalmannschaft</b><small>Bundestrainer Jürgen Klopp · Nations League, Qualifikation, Testspiele</small></span><span class="mc">'+ICO.chev+'</span></button>';
     const g=(...k)=>'<div class="mlist">'+k.map(x=>x==='nt'?nt:(B[x]||'')).join('')+'</div>';
     return g('tp72','nt')+g('stat','tro','hof','md72','cal68')+g('slots','upd','set')+g('home')+tail}catch(e){console.warn('more93',e);return h}};
-/* ---------- Wischen nach rechts = zurück ---------- */
-(function(){let sx=0,sy=0,st=0,ok=false;
-  document.addEventListener('touchstart',e=>{const t=e.touches[0];sx=t.clientX;sy=t.clientY;st=Date.now();
-    ok=!e.target.closest('.wp93,.chips,.tl93,.xpitch,.bench,.seg,.h-scroll,input,textarea,.cupst,.rsel,[data-drag],.sheet .chips,canvas')},{passive:true});
-  document.addEventListener('touchend',e=>{if(!ok)return;const t=e.changedTouches[0];const dx=t.clientX-sx,dy=t.clientY-sy;
-    if(dx>70&&Math.abs(dy)<Math.max(40,dx*.45)&&Date.now()-st<700){const sh=document.querySelector('.sheet.on .shx,.sheet.open .shx');const b=document.querySelector('#carBody .backb[data-more="back"]')||document.querySelector('.backb');if(b&&!sh){b.click()}}},{passive:true})})();
+/* (Wischen zurück: ersetzt in v9.6) */
 /* ---------- Stadion: gedrückt halten → Infos & Bild ---------- */
 const _klubHTML93s=klubHTML;klubHTML=function(){let h=_klubHTML93s.apply(this,arguments);try{h=h.replace(/<div><small>Stadion<\/small>/,'<div class="st93" data-st93="1"><small>Stadion</small>').replace(/(data-st93="1">[\s\S]*?)<\/div>/,'$1<i class="st93h">gedrückt halten</i></div>')}catch(e){}return h};
 const ST93C=(()=>{try{return JSON.parse(localStorage.getItem('bf_st93')||'{}')}catch(e){return{}}})();
@@ -24620,6 +24615,259 @@ wp93Init=function(){const s=document.getElementById('wp93s');if(!s||s._wp)return
   s.addEventListener('touchstart',()=>{touch=true},{passive:true});s.addEventListener('touchend',()=>{touch=false},{passive:true});
   items.forEach((b,i)=>b.addEventListener('click',e=>{e.stopImmediatePropagation();e.preventDefault();s.scrollTo({top:i*WP95H,behavior:'smooth'});clearTimeout(tm);tm=setTimeout(settle,280)},true))};
 
+
+
+/* ================= v9.6: Zurück wischen, echter Spielplan 2026/27, Liga-Logos & -Farben, Sterne, Statistik neu ================= */
+/* ---------- Sterne: feste EA-Skala, unabhängig vom Spielstand ---------- */
+function stars96(o){const L=[[85,5],[82,4.5],[79,4],[76,3.5],[73,3],[70,2.5],[66,2],[62,1.5],[57,1]];for(const [g,s] of L)if(o>=g)return s;return .5}
+clubStars=function(id){let base=60;try{base=isEu(id)?(teamOf(id).ea||60):clubEA(id)}catch(e){}
+  /* in der Karriere: Kaderveränderungen zählen höchstens ±4 Punkte */
+  try{if(typeof CAR!=='undefined'&&CAR&&!isEu(id)){const x=xiAvg93(id);if(x!=null&&isFinite(x)&&x>30&&x<99){CAR.st96=CAR.st96||{};const k=String(id);if(CAR.st96[k]==null)CAR.st96[k]=Math.round(x*10)/10;base+=clamp(x-CAR.st96[k],-4,4)}}}catch(e){}
+  return stars96(base)};
+
+/* ---------- Logos: originale Logos von Wikipedia, sonst farbiges Kürzel ---------- */
+const LG96K='bf_lg96';const LG96=(()=>{try{return JSON.parse(localStorage.getItem(LG96K)||'{}')}catch(e){return{}}})();
+const LG96T={};const LG96Q=new Set();let lg96Tm=null,lg96Run=false;
+const lg96Save=()=>{try{localStorage.setItem(LG96K,JSON.stringify(LG96))}catch(e){}};
+/* Wettbewerbe: Kürzel, Farbe, Wikipedia-Seite */
+const CMP96={1:['BL','#d20515','Bundesliga','L1'],2:['2BL','#a8001c','2. Bundesliga','L2'],3:['3L','#1f3c88','3. Liga','L3'],
+  4:['RL','#0067b1',[['de','Fußball-Regionalliga Nordost'],['en','Regionalliga Nordost']]],5:['RL','#c4161c',[['de','Fußball-Regionalliga Südwest'],['en','Regionalliga Südwest']]],
+  cup:['DFB','#00965e','DFB-Pokal','CUP'],cl:['CL','#0e1e5b','UEFA Champions League','CL'],el:['EL','#f26522','UEFA Europa League','EL'],ecl:['ECL','#00a650','UEFA Conference League','ECL'],
+  sc:['SC','#b8860b','DFL-Supercup'],cwc:['WM','#14378a','FIFA Club World Cup'],nl:['NL','#26346b','UEFA Nations League'],wm:['WM','#8a1538','FIFA World Cup','WM'],em:['EM','#143cdb','UEFA European Championship','EM'],
+  EN:['PL','#3d195b','Premier League','XEN'],ES:['LL','#ff4b44','La Liga','XES'],IT:['SA','#0a5ca8','Serie A','XIT'],FR:['L1','#1c3d8f','Ligue 1','XFR'],NL:['ED','#e85d04','Eredivisie','XNL'],
+  PT:['LP','#0a3b7a','Primeira Liga','XPT'],BE:['PL','#c8102e','Belgian Pro League','XBE'],TR:['SL','#e30a17','Süper Lig','XTR'],CZ:['CL','#d7141a','Czech First League','XCZ']};
+CMP96.eu=CMP96.cl;CMP96.all=['∑','#5b6b8a',''];
+const cmpCol96=k=>(CMP96[k]||['','#5b6b8a'])[1];
+function lg96Tile(txt,col){return '<b>'+esc(txt)+'</b>'}
+/* Logo-Kachel: Bild sobald bekannt, sonst Kürzel in der Vereins-/Ligafarbe */
+function lg96(key,titles,txt,col,cls){const v=LG96[key];let f=v&&v.f;
+  if(!f&&!(v&&v.t&&Date.now()-v.t<7*864e5)&&titles&&titles.length){LG96T[key]=titles;LG96Q.add(key);clearTimeout(lg96Tm);lg96Tm=setTimeout(lg96Fetch,400)}
+  return '<span class="li96 '+(cls||'')+'" style="--c:'+(col||'#5b6b8a')+'" data-lg96="'+esc(key)+'"><b>'+esc(txt||'')+'</b>'+(f?'<img alt="" decoding="async" src="'+coaURL(f)+'" onload="this.parentNode.classList.add(\'ok\')" onerror="this.remove()">':'')+'</span>'}
+function cmpLogo96(k,cls){const c=CMP96[k];if(!c)return '<span class="li96 '+(cls||'')+'"><b>?</b></span>';
+  /* vorhandenes Logo aus dem Spiel bevorzugen */
+  try{const wk=c[3];if(wk&&WX&&WX.comp&&WX.comp[wk]&&!LG96['c:'+k])LG96['c:'+k]={f:WX.comp[wk],t:Date.now()}}catch(e){}
+  const t=c[2]?(Array.isArray(c[2])?c[2]:[['en',c[2]],['de',c[2]]]):null;return lg96('c:'+k,t,c[0],c[1],cls)}
+const RX96=/\|\s*(?:logo|badge|image|crest|bild|wappen|emblem)\s*=\s*(?:\[\[)?\s*(?:File:|Datei:|Image:|Bild:)?\s*([^|\]\n{}<]+?\.(?:svg|png|jpe?g|gif))/i;
+async function lg96Fetch(){if(lg96Run||!navigator.onLine)return;lg96Run=true;let got=0;try{
+  const keys=[...LG96Q];LG96Q.clear();
+  for(const key of keys){const T=LG96T[key]||[];let file=null;
+    for(const [host,title] of T){if(file)break;
+      try{const j=await wxApi(host,'action=parse&prop=wikitext&section=0&redirects=1&page='+encodeURIComponent(title));const w=j&&j.parse&&j.parse.wikitext;const txt=typeof w==='string'?w:(w&&w['*'])||'';
+        const m=txt.match(RX96);if(m)file=(host==='de'?'dw:':'ew:')+m[1].trim().replace(/_/g,' ')}catch(e){}
+      if(!file){try{const j=await wxApi(host,'action=query&prop=pageimages&piprop=name&titles='+encodeURIComponent(title));const p=(j.query&&j.query.pages||[])[0];if(p&&p.pageimage&&/logo|crest|badge|wappen|emblem|\.svg$/i.test(p.pageimage))file=(host==='de'?'dw:':'ew:')+p.pageimage.replace(/_/g,' ')}catch(e){}}}
+    LG96[key]={f:file||'',t:Date.now()};if(file){got++;document.querySelectorAll('[data-lg96="'+key.replace(/"/g,'\\"')+'"]').forEach(el=>{if(el.querySelector('img'))return;el.insertAdjacentHTML('beforeend','<img alt="" decoding="async" src="'+coaURL(file)+'" onload="this.parentNode.classList.add(\'ok\')" onerror="this.remove()">')})}}
+  lg96Save()}catch(e){console.warn('lg96',e)}finally{lg96Run=false;if(LG96Q.size)lg96Tm=setTimeout(lg96Fetch,400)}}
+/* Wettbewerbslogos im ganzen Spiel: compLogo nutzt jetzt auch die nachgeladenen Logos */
+const _compLogo96=compLogo;compLogo=function(k,cls){const h=_compLogo96(k,cls);if(h)return h;const key=k===4?4:k;if(!CMP96[key])return '';const v=LG96['c:'+key];
+  if(v&&v.f)return '<img class="clogo '+(cls||'')+'" alt="" src="'+coaURL(v.f)+'" onerror="this.remove()">';cmpLogo96(key);return ''};
+/* Nationalteams: Verbandswappen */
+const NTT96={ENG:'England',SCO:'Scotland',WAL:'Wales',NIR:'Northern Ireland',IRL:'Republic of Ireland',USA:"United States men's national soccer team",CZE:'Czech Republic',TUR:'Turkey',CIV:'Ivory Coast',KOR:'South Korea',PRK:'North Korea',COD:'DR Congo',CPV:'Cape Verde',BIH:'Bosnia and Herzegovina',MKD:'North Macedonia',RUS:'Russia',IRN:'Iran',CHN:'China',KSA:'Saudi Arabia',UAE:'United Arab Emirates'};
+let DN96=null;try{DN96=new Intl.DisplayNames(['en'],{type:'region'})}catch(e){}
+function ntTitle96(c){c=String(c||'').toUpperCase();const o=NTT96[c];if(o&&/soccer team$/.test(o))return o;let n=o;if(!n){try{const iso=NAT_ISO[c]||(c.length===2?c:'');if(iso&&DN96)n=DN96.of(iso)}catch(e){}}
+  return n?n+' national football team':null}
+function ntCrest96(c,cls){const t=ntTitle96(c);let col='#26346b';try{if(NT_INFO[c]&&NT_INFO[c][1])col=NT_INFO[c][1]}catch(e){}return lg96('n:'+c,t?[['en',t]]:null,natFlag(c),col,cls)}
+const _ntBadge96=ntBadge;ntBadge=function(c,cls){const t=ntTitle96(c);if(!t)return _ntBadge96(c,cls);const v=LG96['n:'+c];if(!v)ntCrest96(c);
+  const img=v&&v.f?'<img class="coa" alt="" src="'+coaURL(v.f)+'" onload="this.classList.add(\'ok\')" onerror="this.parentNode.classList.remove(\'has-coa\');this.remove()">':'';
+  return '<div class="badge club ntb '+(cls||'')+(img?' has-coa':'')+'" data-lg96n="'+c+'">'+img+'<span>'+natFlag(c)+'</span></div>'};
+try{fl93=c=>'<i class="nf93 nf96">'+ntCrest96(c,'xs')+'</i>'}catch(e){}
+/* Sponsoren: echtes Firmenlogo von Wikipedia, sonst Kürzel-Kachel wie bisher */
+const _icon93_96=icon93;icon93=function(x,cls){const nm=nm93(x);if(!nm)return _icon93_96(x,cls);const v=LG96['s:'+nm];
+  if(!v)lg96('s:'+nm,[['de',nm],['en',nm]],'', '#333');
+  if(v&&v.f)return '<span class="lg93 lg96s ok '+(cls||'')+'" style="--c:#fff" title="'+esc(nm)+'"><img alt="" decoding="async" src="'+coaURL(v.f)+'" onerror="this.parentNode.classList.remove(\'ok\');this.remove()"><b>'+esc(ini93(nm))+'</b></span>';
+  return _icon93_96(x,cls)};
+
+const RS96={"1":["FCB-VFB-2608282030 RBL-BMG-2608291530 M05-SCP-2608291530 FCU-SGE-2608291530 KOE-TSG-2608291530 SVE-B04-2608291530 BVB-HSV-2608291830 SCF-SVW-2608301530 FCA-S04-2608301730","VFB-KOE-2609042030 TSG-BVB-2609051530 B04-FCU-2609051530 BMG-SVE-2609051530 SVW-RBL-2609051530 SCP-SCF-2609051530 S04-FCB-2609051830 HSV-M05-2609061530 SGE-FCA-2609061730","FCU-S04-2609112030 BVB-SCP-2609121530 TSG-VFB-2609121530 SCF-BMG-2609121530 FCA-B04-2609121530 M05-SGE-2609121530 KOE-SVW-2609121830 RBL-HSV-2609131530 SVE-FCB-2609131730","FCB-FCU-2609182030 SGE-SCF-2609191530 BMG-M05-2609191530 HSV-KOE-2609191530 SVW-FCA-2609191530 VFB-BVB-2609191830 B04-RBL-2609201530 S04-SVE-2609201730 SCP-TSG-2609201930","BVB-SVW-2610092030 TSG-HSV-2610101530 FCA-FCB-2610101530 M05-B04-2610101530 FCU-SVE-2610101530 SCP-VFB-2610101530 RBL-SGE-2610101830 KOE-BMG-2610111530 SCF-S04-2610111730","SGE-KOE-2610162030 FCU-BVB-2610171530 HSV-VFB-2610171530 SVW-SCP-2610171530 S04-M05-2610171530 SVE-FCA-2610171530 FCB-RBL-2610171830 B04-SCF-2610181530 BMG-TSG-2610181730","VFB-BMG-2610232030 RBL-SVE-2610241530 FCA-FCU-2610241530 M05-SVW-2610241530 KOE-S04-2610241530 SCP-HSV-2610241530 BVB-SGE-2610241830 TSG-B04-2610251530 SCF-FCB-2610251730","SVE-M05-2610302030 B04-VFB-2610311530 FCA-SCF-2610311530 BMG-SCP-2610311530 SVW-TSG-2610311530 S04-RBL-2610311530 FCB-BVB-2610311830 FCU-KOE-2611011530 SGE-HSV-2611011730","HSV-BMG-2611062030 BVB-SVE-2611071530 RBL-FCA-2611071530 M05-FCB-2611071530 SCP-SGE-2611071530 VFB-SVW-2611071830 KOE-B04-2611081530 SCF-FCU-2611081730 TSG-S04-2611081930","FCB-KOE-2611202030 B04-SCP-2611211530 SGE-TSG-2611211530 FCU-RBL-2611211530 BMG-BVB-2611211530 SVE-SCF-2611211530 S04-VFB-2611211830 FCA-M05-2611221530 SVW-HSV-2611221730","SVW-BMG-2611272030 M05-FCU-2611281530 HSV-FCB-2611281530 KOE-SVE-2611281530 SCP-S04-2611281530 VFB-SGE-2611281830 SCF-RBL-2611291530 TSG-FCA-2611291730 BVB-B04-2611291930","FCB-SCP-2612042030 RBL-M05-2612051530 B04-BMG-2612051530 SCF-TSG-2612051530 FCA-KOE-2612051530 FCU-HSV-2612051530 SGE-SVW-2612051830 S04-BVB-2612061530 SVE-VFB-2612061730","HSV-S04-2612112030 BVB-FCA-2612121530 VFB-FCU-2612121530 KOE-RBL-2612121530 SCP-SVE-2612121530 BMG-SGE-2612121830 M05-SCF-2612131530 TSG-FCB-2612131730 SVW-B04-2612131930","FCB-SVW-2612182030 B04-SGE-2612191530 FCA-SCP-2612191530 M05-KOE-2612191530 SVE-HSV-2612191530 RBL-BVB-2612191830 SCF-VFB-2612201530 FCU-TSG-2612201730 S04-BMG-2612201930","BVB-M05-2701082030 VFB-FCA-2701091530 TSG-SVE-2701091530 SGE-S04-2701091530 KOE-SCF-2701091530 SCP-RBL-2701091530 BMG-FCB-2701091830 SVW-FCU-2701101530 HSV-B04-2701101730","RBL-VFB-2701121830 FCA-BMG-2701122030 M05-TSG-2701122030 KOE-BVB-2701122030 SVE-SGE-2701131830 FCB-B04-2701132030 SCF-HSV-2701132030 FCU-SCP-2701132030 S04-SVW-2701132030","VFB-M05-2701152030 BVB-SCF-2701161530 TSG-RBL-2701161530 BMG-FCU-2701161530 HSV-FCA-2701161530 SCP-KOE-2701161530 SGE-FCB-2701161830 SVW-SVE-2701171530 B04-S04-2701171730","SVW-SCF-2701222030 VFB-FCB-2701231530 BMG-RBL-2701231530 S04-FCA-2701231530 SCP-M05-2701231530 HSV-BVB-2701231830 SGE-FCU-2701241530 B04-SVE-2701241730 TSG-KOE-2701241930","FCB-S04-2701301530 BVB-TSG-2701301530 RBL-SVW-2701301530 SCF-SCP-2701301530 FCA-SGE-2701301530 M05-HSV-2701301530 FCU-B04-2701301530 KOE-VFB-2701301530 SVE-BMG-2701301530","FCB-SVE-2702061530 VFB-TSG-2702061530 B04-FCA-2702061530 SGE-M05-2702061530 BMG-SCF-2702061530 HSV-RBL-2702061530 SVW-KOE-2702061530 S04-FCU-2702061530 SCP-BVB-2702061530","BVB-VFB-2702131530 RBL-B04-2702131530 TSG-SCP-2702131530 SCF-SGE-2702131530 FCA-SVW-2702131530 M05-BMG-2702131530 FCU-FCB-2702131530 KOE-HSV-2702131530 SVE-S04-2702131530","FCB-FCA-2702201530 VFB-SCP-2702201530 B04-M05-2702201530 SGE-RBL-2702201530 BMG-KOE-2702201530 HSV-TSG-2702201530 SVW-BVB-2702201530 S04-SCF-2702201530 SVE-FCU-2702201530","BVB-FCU-2702271530 RBL-FCB-2702271530 VFB-HSV-2702271530 TSG-BMG-2702271530 SCF-B04-2702271530 FCA-SVE-2702271530 M05-S04-2702271530 KOE-SGE-2702271530 SCP-SVW-2702271530","FCB-SCF-2703022030 B04-TSG-2703022030 SGE-BVB-2703022030 FCU-FCA-2703022030 BMG-VFB-2703022030 HSV-SCP-2703022030 SVW-M05-2703022030 S04-KOE-2703022030 SVE-RBL-2703022030","BVB-FCB-2703061530 RBL-S04-2703061530 VFB-B04-2703061530 TSG-SVW-2703061530 SCF-FCA-2703061530 M05-SVE-2703061530 HSV-SGE-2703061530 KOE-FCU-2703061530 SCP-BMG-2703061530","FCB-M05-2703131530 B04-KOE-2703131530 SGE-SCP-2703131530 FCA-RBL-2703131530 FCU-SCF-2703131530 BMG-HSV-2703131530 SVW-VFB-2703131530 S04-TSG-2703131530 SVE-BVB-2703131530","BVB-BMG-2703201530 RBL-FCU-2703201530 VFB-S04-2703201530 TSG-SGE-2703201530 SCF-SVE-2703201530 M05-FCA-2703201530 HSV-SVW-2703201530 KOE-FCB-2703201530 SCP-B04-2703201530","FCB-HSV-2704031530 RBL-SCF-2704031530 B04-BVB-2704031530 SGE-VFB-2704031530 FCA-TSG-2704031530 FCU-M05-2704031530 BMG-SVW-2704031530 S04-SCP-2704031530 SVE-KOE-2704031530","BVB-S04-2704101530 VFB-SVE-2704101530 TSG-SCF-2704101530 M05-RBL-2704101530 BMG-B04-2704101530 HSV-FCU-2704101530 KOE-FCA-2704101530 SVW-SGE-2704101530 SCP-FCB-2704101530","FCB-TSG-2704171530 RBL-KOE-2704171530 B04-SVW-2704171530 SCF-M05-2704171530 SGE-BMG-2704171530 FCA-BVB-2704171530 FCU-VFB-2704171530 S04-HSV-2704171530 SVE-SCP-2704171530","BVB-RBL-2704241530 VFB-SCF-2704241530 TSG-FCU-2704241530 SGE-B04-2704241530 BMG-S04-2704241530 HSV-SVE-2704241530 KOE-M05-2704241530 SVW-FCB-2704241530 SCP-FCA-2704241530","FCB-BMG-2705081530 RBL-SCP-2705081530 B04-HSV-2705081530 SCF-KOE-2705081530 FCA-VFB-2705081530 M05-BVB-2705081530 FCU-SVW-2705081530 S04-SGE-2705081530 SVE-TSG-2705081530","BVB-KOE-2705151530 VFB-RBL-2705151530 TSG-M05-2705151530 B04-FCB-2705151530 SGE-SVE-2705151530 BMG-FCA-2705151530 HSV-SCF-2705151530 SVW-S04-2705151530 SCP-FCU-2705151530","FCB-SGE-2705221530 RBL-TSG-2705221530 SCF-BVB-2705221530 FCA-HSV-2705221530 M05-VFB-2705221530 FCU-BMG-2705221530 KOE-SCP-2705221530 S04-B04-2705221530 SVE-SVW-2705221530"],"2":["BOC-BSC-2608072030 FCH-OSN-2608081300 D98-KSV-2608081300 KSC-DSC-2608081300 FCM-EBS-2608081300 WOB-FCK-2608082030 STP-SGF-2608091330 FCN-SGD-2608091330 FCE-H96-2608091330","KSV-STP-2608141830 EBS-BOC-2608141830 BSC-FCH-2608151300 SGF-FCN-2608151300 OSN-FCM-2608151300 FCK-KSC-2608152030 H96-WOB-2608161330 SGD-D98-2608161330 DSC-FCE-2608161330","BOC-OSN-2608281830 EBS-BSC-2608281830 FCH-SGD-2608291300 KSC-WOB-2608291300 FCE-SGF-2608291300 FCN-DSC-2608292030 STP-FCK-2608301330 D98-H96-2608301330 FCM-KSV-2608301330","H96-KSC-2609041830 DSC-STP-2609041830 WOB-FCE-2609051300 FCK-D98-2609051300 KSV-FCN-2609051300 SGD-BOC-2609052030 BSC-FCM-2609061330 SGF-FCH-2609061330 OSN-EBS-2609061330","D98-DSC-2609111830 FCN-H96-2609111830 BOC-SGF-2609121300 FCM-FCK-2609121300 EBS-SGD-2609121300 STP-WOB-2609122030 FCH-KSV-2609131330 KSC-FCE-2609131330 OSN-BSC-2609131330","WOB-D98-2609181830 SGF-FCM-2609181830 FCK-EBS-2609191300 KSC-FCN-2609191300 KSV-OSN-2609191300 SGD-BSC-2609192030 H96-BOC-2609201330 DSC-FCH-2609201330 FCE-STP-2609201330","FCH-FCK-2610091830 EBS-KSV-2610091830 D98-FCE-2610101300 FCM-H96-2610101300 OSN-SGD-2610101300 FCN-WOB-2610102030 STP-KSC-2610111330 BSC-SGF-2610111330 BOC-DSC-2610111330","KSV-BSC-2610161830 FCE-FCN-2610161830 WOB-FCH-2610171300 FCK-BOC-2610171300 SGF-EBS-2610171300 H96-STP-2610172030 KSC-D98-2610181330 SGD-FCM-2610181330 DSC-OSN-2610181330","D98-STP-2610231830 BOC-WOB-2610231830 FCH-FCE-2610241300 BSC-DSC-2610241300 FCM-KSC-2610241300 FCN-FCK-2610242030 KSV-SGD-2610251330 EBS-H96-2610251330 OSN-SGF-2610251330","DSC-EBS-2610301830 FCE-BOC-2610301830 WOB-OSN-2610311300 D98-FCM-2610311300 FCK-BSC-2610311300 KSC-FCH-2610312030 STP-FCN-2611011330 H96-SGD-2611011330 SGF-KSV-2611011330","SGD-SGF-2611061830 EBS-FCE-2611061830 FCN-D98-2611071300 KSV-DSC-2611071300 OSN-FCK-2611071300 BSC-WOB-2611072030 FCH-H96-2611081330 BOC-KSC-2611081330 FCM-STP-2611081330","D98-FCH-2611201830 DSC-FCM-2611201830 WOB-KSV-2611211300 H96-SGF-2611211300 FCN-EBS-2611211300 STP-BOC-2611212030 FCK-SGD-2611221330 KSC-OSN-2611221330 FCE-BSC-2611221330","FCH-FCN-2611271830 BOC-D98-2611271830 BSC-KSC-2611281300 SGD-STP-2611281300 KSV-FCK-2611281300 OSN-H96-2611282030 FCM-FCE-2611291330 EBS-WOB-2611291330 SGF-DSC-2611291330","DSC-SGD-2612041830 FCE-OSN-2612041830 FCK-SGF-2612051300 FCN-BOC-2612051300 KSC-KSV-2612051300 H96-BSC-2612052030 WOB-FCM-2612061330 STP-FCH-2612061330 D98-EBS-2612061330","DSC-FCK-2612111830 FCM-FCN-2612111830 BSC-D98-2612121300 KSV-H96-2612121300 EBS-KSC-2612121300 SGD-FCE-2612122030 BOC-FCH-2612131330 SGF-WOB-2612131330 OSN-STP-2612131330","FCN-OSN-2612181830 FCE-KSV-2612181830 WOB-DSC-2612191300 STP-BSC-2612191300 KSC-SGD-2612191300 BOC-FCM-2612192030 FCH-EBS-2612201330 H96-FCK-2612201330 D98-SGF-2612201330","DSC-H96-2701151830 SGF-KSC-2701151830 KSV-BOC-2701161300 FCM-FCH-2701161300 EBS-STP-2701161300 BSC-FCN-2701162030 FCK-FCE-2701171330 SGD-WOB-2701171330 OSN-D98-2701171330","SGD-FCN-2701221830 EBS-FCM-2701221830 H96-FCE-2701231300 BSC-BOC-2701231300 OSN-FCH-2701231300 FCK-WOB-2701241330 KSV-D98-2701241330 DSC-KSC-2701241330 SGF-STP-2701241330","WOB-H96-2701311330 STP-KSV-2701311330 FCH-BSC-2701311330 D98-SGD-2701311330 FCN-SGF-2701311330 BOC-EBS-2701311330 KSC-FCK-2701311330 FCM-OSN-2701311330 FCE-DSC-2701311330","WOB-KSC-2702071330 H96-D98-2702071330 FCK-STP-2702071330 BSC-EBS-2702071330 SGD-FCH-2702071330 KSV-FCM-2702071330 DSC-FCN-2702071330 SGF-FCE-2702071330 OSN-BOC-2702071330","STP-DSC-2702141330 FCH-SGF-2702141330 D98-FCK-2702141330 FCN-KSV-2702141330 BOC-SGD-2702141330 KSC-H96-2702141330 FCM-BSC-2702141330 EBS-OSN-2702141330 FCE-WOB-2702141330","WOB-STP-2702211330 H96-FCN-2702211330 FCK-FCM-2702211330 BSC-OSN-2702211330 SGD-EBS-2702211330 KSV-FCH-2702211330 DSC-D98-2702211330 SGF-BOC-2702211330 FCE-KSC-2702211330","STP-FCE-2702281330 FCH-DSC-2702281330 D98-WOB-2702281330 BSC-SGD-2702281330 FCN-KSC-2702281330 BOC-H96-2702281330 FCM-SGF-2702281330 EBS-FCK-2702281330 OSN-KSV-2702281330","WOB-FCN-2703031830 H96-FCM-2703031830 FCK-FCH-2703031830 KSC-STP-2703031830 SGD-OSN-2703031830 KSV-EBS-2703031830 DSC-BOC-2703031830 SGF-BSC-2703031830 FCE-D98-2703031830","STP-H96-2703071330 FCH-WOB-2703071330 D98-KSC-2703071330 BSC-KSV-2703071330 FCN-FCE-2703071330 BOC-FCK-2703071330 FCM-SGD-2703071330 EBS-SGF-2703071330 OSN-DSC-2703071330","WOB-BOC-2703141330 STP-D98-2703141330 H96-EBS-2703141330 FCK-FCN-2703141330 KSC-FCM-2703141330 SGD-KSV-2703141330 DSC-BSC-2703141330 SGF-OSN-2703141330 FCE-FCH-2703141330","FCH-KSC-2703211330 BSC-FCK-2703211330 FCN-STP-2703211330 BOC-FCE-2703211330 SGD-H96-2703211330 KSV-SGF-2703211330 FCM-D98-2703211330 EBS-DSC-2703211330 OSN-WOB-2703211330","WOB-BSC-2704041330 STP-FCM-2704041330 H96-FCH-2704041330 D98-FCN-2704041330 FCK-OSN-2704041330 KSC-BOC-2704041330 DSC-KSV-2704041330 SGF-SGD-2704041330 FCE-EBS-2704041330","FCH-D98-2704111330 BSC-FCE-2704111330 BOC-STP-2704111330 SGD-FCK-2704111330 KSV-WOB-2704111330 FCM-DSC-2704111330 EBS-FCN-2704111330 SGF-H96-2704111330 OSN-KSC-2704111330","WOB-EBS-2704181330 STP-SGD-2704181330 H96-OSN-2704181330 D98-BOC-2704181330 FCK-KSV-2704181330 FCN-FCH-2704181330 KSC-BSC-2704181330 DSC-SGF-2704181330 FCE-FCM-2704181330","FCH-STP-2704251330 BSC-H96-2704251330 BOC-FCN-2704251330 SGD-DSC-2704251330 KSV-KSC-2704251330 FCM-WOB-2704251330 EBS-D98-2704251330 SGF-FCK-2704251330 OSN-FCE-2704251330","WOB-SGF-2705091330 STP-OSN-2705091330 FCH-BOC-2705091330 H96-KSV-2705091330 D98-BSC-2705091330 FCK-DSC-2705091330 FCN-FCM-2705091330 KSC-EBS-2705091330 FCE-SGD-2705091330","FCK-H96-2705161330 BSC-STP-2705161330 SGD-KSC-2705161330 KSV-FCE-2705161330 DSC-WOB-2705161330 FCM-BOC-2705161330 EBS-FCH-2705161330 SGF-D98-2705161330 OSN-FCN-2705161330","WOB-SGD-2705231530 STP-EBS-2705231530 FCH-FCM-2705231530 H96-DSC-2705231530 D98-OSN-2705231530 FCN-BSC-2705231530 BOC-KSV-2705231530 KSC-SGF-2705231530 FCE-FCK-2705231530"],"3":["WAL-F95-2608071900 FCI-FWK-2608081400 MSV-SVM-2608081400 WEH-PRM-2608081400 VIK-SSV-2608081400 HAV-VFB2-2608081400 SGS-FOR-2608081630 TSG2-HRO-2608091330 FCS-RWE-2608091630 AAC-SCV-2608091930","FWK-WEH-2608141900 F95-TSG2-2608151400 PRM-FCI-2608151400 RWE-HAV-2608151400 FOR-AAC-2608151400 SVM-SGS-2608151400 SCV-MSV-2608151630 HRO-WAL-2608161330 SSV-FCS-2608161630 VFB2-VIK-2608161930","F95-VFB2-2608281900 MSV-FWK-2608291400 AAC-SVM-2608291400 SCV-FOR-2608291400 WEH-RWE-2608291400 SGS-FCI-2608291400 TSG2-SSV-2608291630 FCS-HRO-2608301330 HAV-WAL-2608301630 VIK-PRM-2608301930","FCI-AAC-2609041900 HRO-WEH-2609051400 PRM-HAV-2609051400 WAL-SCV-2609051400 SSV-MSV-2609051400 SVM-FCS-2609051400 RWE-VIK-2609051630 FWK-VFB2-2609061330 SGS-TSG2-2609061630 FOR-F95-2609061930","VIK-HRO-2609111900 F95-MSV-2609121400 RWE-FWK-2609121400 SCV-SVM-2609121400 FCS-FCI-2609121400 HAV-SGS-2609121400 AAC-SSV-2609121630 VFB2-PRM-2609131330 WEH-WAL-2609131630 TSG2-FOR-2609131930","MSV-HAV-2609151900 SSV-F95-2609151900 SVM-VIK-2609151900 SGS-SCV-2609151900 FWK-AAC-2609151900 FCI-TSG2-2609161900 PRM-FCS-2609161900 HRO-VFB2-2609161900 WAL-RWE-2609161900 FOR-WEH-2609161900","SCV-FWK-2609181900 AAC-F95-2609191400 VIK-FCI-2609191400 VFB2-SSV-2609191400 TSG2-SVM-2609191400 FCS-SGS-2609191630 RWE-HRO-2609201330 WAL-PRM-2609201630 WEH-MSV-2609201930 HAV-FOR-2609251900","PRM-RWE-2610091900 SSV-HAV-2610101400 FOR-FCS-2610101400 SVM-VFB2-2610101400 SGS-WAL-2610101400 FWK-HRO-2610101400 MSV-TSG2-2610101630 FCI-WEH-2610111330 AAC-VIK-2610111630 F95-SCV-2610111930","HRO-SVM-2610131900 RWE-FOR-2610131900 VFB2-TSG2-2610131900 FCS-MSV-2610131900 HAV-FWK-2610131900 PRM-F95-2610141900 SCV-SSV-2610141900 WEH-AAC-2610141900 WAL-FCI-2610141900 VIK-SGS-2610141900","FOR-VFB2-2610161900 F95-FCS-2610171400 FCI-RWE-2610171400 SSV-WEH-2610171400 SGS-PRM-2610171400 AAC-HRO-2610171400 FWK-WAL-2610171630 TSG2-SCV-2610181330 MSV-VIK-2610181630 SVM-HAV-2610181930","RWE-SSV-2610231900 VIK-SCV-2610241400 HRO-F95-2610241400 WEH-SGS-2610241400 FCI-MSV-2610241400 SVM-FWK-2610241400 VFB2-AAC-2610241630 HAV-FCS-2610251330 PRM-FOR-2610251630 WAL-TSG2-2610251930","F95-SVM-2610301900 TSG2-VIK-2610311400 MSV-VFB2-2610311400 SCV-WEH-2610311400 SSV-HRO-2610311400 HAV-FCI-2610311400 FOR-FWK-2610311630 FCS-WAL-2611011330 SGS-RWE-2611011630 AAC-PRM-2611011930","VIK-FCS-2611061900 RWE-AAC-2611071400 HRO-SGS-2611071400 WEH-HAV-2611071400 WAL-FOR-2611071400 FCI-F95-2611071400 PRM-MSV-2611071630 SVM-SSV-2611081330 VFB2-SCV-2611081630 FWK-TSG2-2611081930","HAV-VIK-2611201900 SCV-RWE-2611211400 F95-SGS-2611211400 SSV-FWK-2611211400 TSG2-PRM-2611211400 FOR-SVM-2611211400 AAC-WAL-2611211630 VFB2-FCI-2611221330 FCS-WEH-2611221630 MSV-HRO-2611221930","HRO-HAV-2611271900 FWK-F95-2611281400 PRM-SCV-2611281400 RWE-TSG2-2611281400 WAL-VFB2-2611281400 FCS-AAC-2611281400 SGS-MSV-2611281630 VIK-FOR-2611291330 WEH-SVM-2611291630 FCI-SSV-2611291930","MSV-WAL-2612041900 SCV-FCI-2612051400 VFB2-SGS-2612051400 FOR-HRO-2612051400 SVM-RWE-2612051400 FWK-VIK-2612051400 F95-WEH-2612051630 SSV-PRM-2612061330 TSG2-FCS-2612061630 AAC-HAV-2612061930","VIK-F95-2612111900 RWE-MSV-2612121400 WEH-VFB2-2612121400 WAL-SSV-2612121400 FCS-FWK-2612121400 HAV-TSG2-2612121400 PRM-SVM-2612121630 SGS-AAC-2612131330 FCI-FOR-2612131630 HRO-SCV-2612131930","VIK-WAL-2612181900 TSG2-WEH-2612191400 MSV-AAC-2612191400 HRO-PRM-2612191400 SSV-FOR-2612191400 FWK-SGS-2612191400 SVM-FCI-2612191630 VFB2-FCS-2612201330 SCV-HAV-2612201630 F95-RWE-2612201930","AAC-TSG2-2701151900 RWE-VFB2-2701161400 WAL-SVM-2701161400 FCI-HRO-2701161400 FCS-SCV-2701161400 PRM-FWK-2701161400 FOR-MSV-2701161630 SGS-SSV-2701171330 HAV-F95-2701171630 WEH-VIK-2701171930","RWE-FCS-2701221900 F95-WAL-2701231400 SCV-AAC-2701231400 SSV-VIK-2701231400 VFB2-HAV-2701231400 FOR-SGS-2701231400 HRO-TSG2-2701231630 PRM-WEH-2701241330 SVM-MSV-2701241630 FWK-FCI-2701241930","WEH-FWK-2701301400 MSV-SCV-2701301400 AAC-FOR-2701301400 WAL-HRO-2701301400 VIK-VFB2-2701301400 FCI-PRM-2701301400 FCS-SSV-2701301400 TSG2-F95-2701301400 HAV-RWE-2701301400 SGS-SVM-2701301400","SSV-TSG2-2702061400 PRM-VIK-2702061400 RWE-WEH-2702061400 HRO-FCS-2702061400 WAL-HAV-2702061400 FCI-SGS-2702061400 VFB2-F95-2702061400 FOR-SCV-2702061400 SVM-AAC-2702061400 FWK-MSV-2702061400","HAV-PRM-2702131400 F95-FOR-2702131400 MSV-SSV-2702131400 AAC-FCI-2702131400 SCV-WAL-2702131400 WEH-HRO-2702131400 VIK-RWE-2702131400 VFB2-FWK-2702131400 FCS-SVM-2702131400 TSG2-SGS-2702131400","SGS-HAV-2702201400 PRM-VFB2-2702201400 MSV-F95-2702201400 HRO-VIK-2702201400 WAL-WEH-2702201400 FCI-FCS-2702201400 SSV-AAC-2702201400 FOR-TSG2-2702201400 SVM-SCV-2702201400 FWK-RWE-2702201400","AAC-FWK-2702271400 F95-SSV-2702271400 RWE-WAL-2702271400 SCV-SGS-2702271400 WEH-FOR-2702271400 VIK-SVM-2702271400 VFB2-HRO-2702271400 FCS-PRM-2702271400 TSG2-FCI-2702271400 HAV-MSV-2702271400","FWK-SCV-2703031900 F95-AAC-2703031900 PRM-WAL-2703031900 MSV-WEH-2703031900 HRO-RWE-2703031900 FCI-VIK-2703031900 SSV-VFB2-2703031900 FOR-HAV-2703031900 SVM-TSG2-2703031900 SGS-FCS-2703031900","RWE-PRM-2703061400 HRO-FWK-2703061400 SCV-F95-2703061400 WEH-FCI-2703061400 WAL-SGS-2703061400 VIK-AAC-2703061400 VFB2-SVM-2703061400 FCS-FOR-2703061400 TSG2-MSV-2703061400 HAV-SSV-2703061400","SSV-SCV-2703131400 F95-PRM-2703131400 MSV-FCS-2703131400 AAC-WEH-2703131400 FCI-WAL-2703131400 TSG2-VFB2-2703131400 FOR-RWE-2703131400 SVM-HRO-2703131400 SGS-VIK-2703131400 FWK-HAV-2703131400","WEH-SSV-2703171900 PRM-SGS-2703171900 RWE-FCI-2703171900 HRO-AAC-2703171900 SCV-TSG2-2703171900 WAL-FWK-2703171900 VIK-MSV-2703171900 VFB2-FOR-2703171900 FCS-F95-2703171900 HAV-SVM-2703171900","F95-HRO-2703201400 MSV-FCI-2703201400 AAC-VFB2-2703201400 SCV-VIK-2703201400 FCS-HAV-2703201400 TSG2-WAL-2703201400 FOR-PRM-2703201400 SGS-WEH-2703201400 FWK-SVM-2703201400 SSV-RWE-2703201400","FCI-HAV-2704031400 PRM-AAC-2704031400 RWE-SGS-2704031400 HRO-SSV-2704031400 WEH-SCV-2704031400 WAL-FCS-2704031400 VIK-TSG2-2704031400 VFB2-MSV-2704031400 SVM-F95-2704031400 FWK-FOR-2704031400","F95-FCI-2704101400 MSV-PRM-2704101400 AAC-RWE-2704101400 SCV-VFB2-2704101400 SSV-SVM-2704101400 FCS-VIK-2704101400 TSG2-FWK-2704101400 HAV-WEH-2704101400 FOR-WAL-2704101400 SGS-HRO-2704101400","RWE-SCV-2704171400 PRM-TSG2-2704171400 HRO-MSV-2704171400 WEH-FCS-2704171400 WAL-AAC-2704171400 VIK-HAV-2704171400 FCI-VFB2-2704171400 SVM-FOR-2704171400 SGS-F95-2704171400 FWK-SSV-2704171400","SCV-PRM-2704241400 F95-FWK-2704241400 MSV-SGS-2704241400 AAC-FCS-2704241400 SSV-FCI-2704241400 VFB2-WAL-2704241400 TSG2-RWE-2704241400 HAV-HRO-2704241400 FOR-VIK-2704241400 SVM-WEH-2704241400","WEH-F95-2704281900 PRM-SSV-2704281900 RWE-SVM-2704281900 HRO-FOR-2704281900 WAL-MSV-2704281900 VIK-FWK-2704281900 FCI-SCV-2704281900 FCS-TSG2-2704281900 HAV-AAC-2704281900 SGS-VFB2-2704281900","F95-VIK-2705081400 MSV-RWE-2705081400 AAC-SGS-2705081400 SCV-HRO-2705081400 SSV-WAL-2705081400 VFB2-WEH-2705081400 TSG2-HAV-2705081400 FOR-FCI-2705081400 FWK-FCS-2705081400 SVM-PRM-2705081400","FCS-VFB2-2705151400 PRM-HRO-2705151400 RWE-F95-2705151400 AAC-MSV-2705151400 WEH-TSG2-2705151400 WAL-VIK-2705151400 FCI-SVM-2705151400 HAV-SCV-2705151400 FOR-SSV-2705151400 SGS-FWK-2705151400","F95-HAV-2705221330 MSV-FOR-2705221330 HRO-FCI-2705221330 SCV-FCS-2705221330 VIK-WEH-2705221330 SSV-SGS-2705221330 VFB2-RWE-2705221330 TSG2-AAC-2705221330 SVM-WAL-2705221330 FWK-PRM-2705221330"]};
+
+/* ---------- Zurück: vom linken Rand wischen, immer zur Übersicht ---------- */
+const ROOT96=new Set(['day','tab','kader','club','more']);
+function carBack96(){if(typeof CAR==='undefined'||!CAR)return false;
+  const sh=document.querySelector('.sheet.on .shx,.sheet.open .shx');if(sh){sh.click();return true}
+  if(!ROOT96.has(carView)){carView='more';CAR.msub=null;try{sfx('tap')}catch(e){}carRender();try{const b=$('#carBody');if(b)b.scrollTo({top:0})}catch(e){}return true}
+  return false}
+(function(){let sx=0,sy=0,on=false,dx=0,lock=null;const B=()=>document.getElementById('carBody');const sheetOpen=()=>!!document.querySelector('.sheet.on,.sheet.open');
+  document.addEventListener('touchstart',e=>{on=false;lock=null;dx=0;if(e.touches.length>1)return;const t=e.touches[0];if(t.clientX>30)return;
+    if(!document.body.classList.contains('career'))return;const c=document.getElementById('car');if(!c||c.classList.contains('off'))return;
+    if(typeof CAR==='undefined'||!CAR)return;if(ROOT96.has(carView)&&!sheetOpen())return;sx=t.clientX;sy=t.clientY;on=true},{passive:true,capture:true});
+  document.addEventListener('touchmove',e=>{if(!on)return;const t=e.touches[0];dx=t.clientX-sx;const dy=t.clientY-sy;
+    if(lock==null&&(Math.abs(dx)>8||Math.abs(dy)>8))lock=Math.abs(dx)>Math.abs(dy)*1.1?'x':'y';if(lock!=='x')return;
+    const b=B();if(b&&!sheetOpen()){b.style.transition='none';b.style.transform='translateX('+Math.max(0,dx*.55).toFixed(1)+'px)';b.style.opacity=String(1-Math.min(.3,dx/1000))}},{passive:true,capture:true});
+  const end=ok=>{if(!on)return;on=false;const b=B();const go=ok&&lock==='x'&&dx>60;if(b){b.style.transition='transform .22s ease,opacity .22s ease';b.style.transform='';b.style.opacity='';setTimeout(()=>{if(b)b.style.transition=''},260)}if(go)carBack96()};
+  document.addEventListener('touchend',()=>end(true),{passive:true,capture:true});document.addEventListener('touchcancel',()=>end(false),{passive:true,capture:true})})();
+
+/* ---------- Echter Spielplan 2026/27 (nur neue Karrieren) ---------- */
+const d96=c=>new Date(2000+ +c.slice(0,2),+c.slice(2,4)-1,+c.slice(4,6),+c.slice(6,8),+c.slice(8,10));
+const CUPD96=['2026-08-22T18:00','2026-10-27T20:45','2026-12-01T20:45','2027-02-02T20:45','2027-04-20T20:45','2027-05-29T20:00'];
+const IB96={2026:[['2026-09-21','2026-10-06'],['2026-11-09','2026-11-17'],['2027-03-22','2027-03-30']]};
+function ib96(s){if(IB96[s]&&real96())return IB96[s].map(([a,b])=>[new Date(a+'T00:00'),new Date(b+'T23:59')]);
+  /* sonst die Pausen des automatisch erzeugten Spielplans */
+  return [[new Date(s,8,4),new Date(s,8,10,23)],[new Date(s,9,9),new Date(s,9,15,23)],[new Date(s,10,13),new Date(s,10,19,23)],[new Date(s+1,2,21),new Date(s+1,2,27,23)]]}
+const real96=()=>typeof CAR!=='undefined'&&CAR&&CAR.real96&&CAR.season===2026&&CAR.rs96;
+function rs96Apply(){try{if(!CAR||CAR.season!==2026||CAR.real96||CAR.R>0)return;const ix={};CLUB.forEach(k=>ix[k.short]=k.i);const out={};
+  for(const l of [1,2,3]){const RS=RS96[l];if(!RS||!CAR.lg[l]||!CAR.fx[l])continue;const set=new Set(CAR.lg[l]);const rounds=[],times=[];let ok=RS.length===CAR.fx[l].length;
+    RS.forEach(str=>{const m=[],t=[];str.split(' ').forEach(x=>{const [h,a,d]=x.split('-');const hi=ix[h],ai=ix[a];if(hi==null||ai==null||!set.has(hi)||!set.has(ai)){ok=false;return}m.push([hi,ai]);t.push(d)});rounds.push(m);times.push(t)});
+    if(ok&&rounds.every(m=>m.length*2===set.size))out[l]={rounds,times}}
+  const ls=Object.keys(out);if(!ls.length)return;CAR.rs96={};ls.forEach(l=>{CAR.fx[l]=out[l].rounds;CAR.rs96[l]=out[l].times});CAR.real96=1;
+  for(const k in CAL68C)delete CAL68C[k];cup96Sl();carSave()}catch(e){console.error('rs96',e)}}
+function ko96(l,r,id){try{if(!real96()||!CAR.rs96[l])return null;const m=CAR.fx[l][r];if(!m)return null;const i=m.findIndex(p=>p[0]===id||p[1]===id);const t=CAR.rs96[l][r];return d96(i>=0?t[i]:t.slice().sort()[0])}catch(e){return null}}
+const _calRounds96=calRounds68;calRounds68=function(l){l=l||carMyL();try{if(real96()&&CAR.rs96[l]){const k='r96|'+l+'|'+CAR.club;if(CAL68C[k])return CAL68C[k];
+    return CAL68C[k]=CAR.fx[l].map((m,r)=>ko96(l,r,CAR.club))}}catch(e){}return _calRounds96.apply(this,arguments)};
+function cup96Sl(){try{const C=CAR.cup;if(!C||C.st>0)return;const R=calRounds68(carMyL());const L=R.length;const sl=[];
+  CUPD96.forEach((d,k)=>{const t=new Date(d);let r=R.filter(x=>x<t).length;r=Math.min(L-1,r);if(sl.length&&r<=sl[sl.length-1])r=Math.min(L-1,sl[sl.length-1]+1);sl.push(r)});C.sl=sl}catch(e){console.error('cup96',e)}}
+const _carNew96=carNew;carNew=function(){const r=_carNew96.apply(this,arguments);rs96Apply();return r};
+const fmtKo96=d=>d.toLocaleDateString('de-DE',{weekday:'short'}).replace('.','')+' '+d.getDate()+'.'+(d.getMonth()+1)+'. · '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+const _calEvents96=calEvents68;calEvents68=function(){const L=_calEvents96.apply(this,arguments);try{if(real96()){L.forEach(e=>{
+    if(e.k==='lg'&&e.d&&e.d.getHours())e.s=(e.s||'')+' · '+String(e.d.getHours()).padStart(2,'0')+':'+String(e.d.getMinutes()).padStart(2,'0');
+    if(e.k==='cup'){const k=CUP_ST.findIndex(x=>String(e.s||'').indexOf(x)===0);if(k>=0)e.d=new Date(CUPD96[k])}});L.sort((a,b)=>a.d-b.d)}
+  /* Länderspielpausen als Termin */
+  ib96(CAR.season).forEach(([s,e])=>L.push({d:s,k:'ib',ic:cmpLogo96('nl','cl71'),t:'Länderspielpause',s:'bis '+e.toLocaleDateString('de-DE',{day:'numeric',month:'short'})+' · Liga pausiert',done:calToday68()>e}));
+  L.forEach(e=>{if(e.k==='nt')e.ic=cmpLogo96('nl','cl71')});L.sort((a,b)=>a.d-b.d)}catch(e){console.warn('cal96',e)}return L};
+const _carDayHTML96=carDayHTML;carDayHTML=function(){let h=_carDayHTML96.apply(this,arguments);try{if(real96()&&CAR.phase==='season'){const d=ko96(carMyL(),CAR.R,CAR.club);
+    if(d){const k=fmtKo96(d);if(/<div class="cmPl">/.test(h))h=h.replace(/(<div class="cmPl">[^<]*?(?:Heimspiel|Auswärtsspiel|Neutraler Platz))/,'$1 · '+k);else h=h.replace(/(<div class="cmP">[^<]*?)(Heimspiel|Auswärtsspiel)/,'$1'+k+' · $2')}}}catch(e){}return h};
+
+/* ---------- Länderspielpausen: Nationalspieler weg, Ergebnisse in den News ---------- */
+function ib96Sim(a,b){const d=(ntR93(a)-ntR93(b))/1.6;return[poi(clamp(1.25*Math.exp(.055*d),.15,3.8)),poi(clamp(1.25*Math.exp(-.055*d),.15,3.8))]}
+function ib96Run(s,e){const pool=Object.keys(NT_INFO||{});const thr=c=>{let t=74;try{t=clamp(Math.round(ntEA(c.nat))-4,70,83)}catch(e){}return t};const me=CAR.cards.filter(c=>c.nat&&!(c.inj>0)&&NT_INFO[c.nat]&&Math.round(ovr(c))>=thr(c)).sort((x,y)=>ovr(y)-ovr(x)).slice(0,12);
+  const days=(e-s)/864e5;const n=days>10?4:2;
+  if(!me.length){fxNews('󰄕','Länderspielpause – kein Spieler von dir ist abgestellt','s');return}
+  try{ntTick93()}catch(x){}
+  const nats=[...new Set(me.map(c=>c.nat))];const lines=[],hurt=[];
+  nats.forEach(nt=>{const pl=me.filter(c=>c.nat===nt);let res=[];
+    if(nt==='GER'){try{N93().m.filter(m=>m.done&&(m.h==='GER'||m.a==='GER')&&d93(m.d)>=s&&d93(m.d)<=e).forEach(m=>res.push([m.h,m.a,m.gh,m.ga]))}catch(x){}}
+    if(!res.length)for(let i=0;i<n;i++){const o=pool.filter(c=>c!==nt)[Math.random()*(pool.length-1)|0];if(!o)break;const home=i%2===0;const [g1,g2]=ib96Sim(home?nt:o,home?o:nt);res.push(home?[nt,o,g1,g2]:[o,nt,g1,g2])}
+    const goals={};res.forEach(([h,a,gh,ga])=>{const g=h===nt?gh:ga;for(let i=0;i<g;i++)pl.forEach(c=>{if(Math.random()<(c.gk?0:.16))goals[c.n]=(goals[c.n]||0)+1})});
+    const sc=Object.entries(goals).map(([k,v])=>k.split(' ').slice(-1)[0]+(v>1?' ('+v+')':''));
+    lines.push(ntName(nt)+': '+res.map(([h,a,gh,ga])=>(h===nt?'vs ':'@ ')+ntName(h===nt?a:h)+' '+(h===nt?gh+':'+ga:ga+':'+gh)).join(', ')+(sc.length?' – Tore: '+sc.join(', '):''));
+    pl.forEach(c=>{if(Math.random()<.06){c.inj=1+(Math.random()*3|0);hurt.push(c)}})});
+  const names=me.map(c=>c.n.split(' ').slice(-1)[0]);
+  fxNews('󰄕','Länderspielpause: '+me.length+' Spieler abgestellt ('+names.slice(0,4).join(', ')+(names.length>4?' …':'')+')','s');
+  lines.forEach(t=>{try{post72({a:'kicker',t:'Länderspiele · '+t})}catch(x){}});
+  hurt.forEach(c=>fxNews('󰄢',c.n+' kommt verletzt von der Nationalmannschaft zurück und fällt '+c.inj+' Spiel'+(c.inj>1?'e':'')+' aus','inj'));
+  try{miniToast('󰄕','Länderspielpause',me.length+' Spieler abgestellt'+(hurt.length?' · '+hurt.length+' verletzt zurück':''))}catch(x){}}
+function ib96Check(R0){if(!CAR||CAR.phase!=='season'||CAR.R<=R0)return;const R=calRounds68(carMyL());const a=R[Math.min(R0,R.length-1)],b=R[Math.min(CAR.R,R.length-1)];if(!a||!b)return;
+  CAR.ib96=CAR.ib96||{};ib96(CAR.season).forEach(([s,e],i)=>{const key=CAR.season+'-'+i;if(CAR.ib96[key])return;if(s>a&&s<=b){CAR.ib96[key]=1;ib96Run(s,e)}})}
+const _carRound96=carRound;carRound=function(my){const R0=CAR?CAR.R:0;const r=_carRound96.apply(this,arguments);try{ib96Check(R0)}catch(e){console.error('ib96',e)}return r};
+
+/* ---------- Statistik: Vorlagen, Karten, Zu-Null-Spiele pro Wettbewerb mitschreiben ---------- */
+const _statRec96=statRec;statRec=function(r,comp){if(typeof CAR==='undefined'||!CAR||!r||r._st)return _statRec96.apply(this,arguments);
+  let S=null,before={};try{S=statSeason();for(const n in S.p){const o=S.p[n];before[n]=o.g[0]+o.g[1]+o.g[2]}}catch(e){}
+  const res=_statRec96.apply(this,arguments);
+  try{if(!S)return res;const ci=comp==='l'?0:comp==='cup'?1:2;S.x96=S.x96||{};
+    const X=(n,c)=>{const o=S.x96[n]||(S.x96[n]={c,a:[0,0,0],y:[0,0,0],r:[0,0,0],m:[0,0,0],cs:[0,0,0]});o.c=c;return o};
+    const sc={};for(const n in S.p){const o=S.p[n];const d=o.g[0]+o.g[1]+o.g[2]-(before[n]||0);if(d>0)sc[n]=d}
+    const pick=(L,w)=>{const t=w.reduce((a,b)=>a+b,0);if(!t)return null;let x=Math.random()*t;for(let i=0;i<L.length;i++){x-=w[i];if(x<=0)return L[i]}return L[L.length-1]};
+    [[r.h,r.gh,r.ga],[r.a,r.ga,r.gh]].forEach(([id,g,og])=>{if(id==null)return;const xi=statXI(id);if(!xi)return;const f=(xi.f||[]).filter(p=>p&&p.n);
+      f.forEach(p=>X(p.n,id).m[ci]++);if(xi.gk&&xi.gk.n){const k=X(xi.gk.n,id);k.m[ci]++;if(!og)k.cs[ci]++}
+      const scorers=[];f.forEach(p=>{for(let i=0;i<(sc[p.n]||0);i++)scorers.push(p.n)});
+      for(let i=0;i<(g||0);i++){if(Math.random()>.76)continue;const sn=scorers[i]||null;const L=f.filter(p=>p.n!==sn);const p=pick(L,L.map(p=>Math.max(2,(p.v||60)-48)));if(p)X(p.n,id).a[ci]++}
+      const all=f.concat(xi.gk&&xi.gk.n?[xi.gk]:[]);const ny=poi(1.7);const got={};
+      for(let i=0;i<ny;i++){const p=pick(all,all.map(q=>q===xi.gk?.25:1));if(!p)break;if(got[p.n]){if(Math.random()<.12){X(p.n,id).r[ci]++;}continue}got[p.n]=1;X(p.n,id).y[ci]++}
+      if(Math.random()<.015){const p=pick(all,all.map(q=>q===xi.gk?.2:1));if(p)X(p.n,id).r[ci]++}})}catch(e){console.warn('s96',e)}
+  return res};
+
+/* ---------- Statistik-Seite neu ---------- */
+const SK96=[['g','Tore'],['a','Vorlagen'],['sc','Scorer'],['cs','Zu Null'],['k','Karten'],['n','Noten']];
+function sfOpts96(){const o=[1,2,3,4,5,'cup'];if(CAR.euro&&CAR.euro.comp)o.push('eu');return o}
+const sfName96=v=>v==='cup'?'Pokal':v==='eu'?({cl:'CL',el:'EL',ecl:'ECL'})[CAR.euro&&CAR.euro.comp]||'Europa':({1:'1. Liga',2:'2. Liga',3:'3. Liga',4:'RL Nordost',5:'RL Südwest'})[v];
+function cmpBtn96(v,on,attr){const key=v==='eu'?(CAR.euro&&CAR.euro.comp)||'cl':v;return '<button class="cb96 press'+(on?' on':'')+'" style="--c:'+cmpCol96(key)+'" '+attr+'="'+v+'">'+cmpLogo96(key,'xs')+'<span>'+sfName96(v)+'</span></button>'}
+function statHTML96(){const S=statSeason();const k=CAR.s96k||'g';const opts=sfOpts96();let f=CAR.s96f!=null?CAR.s96f:carMyL();if(!opts.map(String).includes(String(f)))f=carMyL();
+  const ci=f==='cup'?1:f==='eu'?2:0;const inF=c=>ci?true:(typeof c==='number'&&carLeagueOf(c)===+f);
+  let h=backRow('Mehr')+'<div class="chips sk96" id="sk96">'+SK96.map(([v,n])=>'<button class="press'+(k===v?' on':'')+'" data-s96k="'+v+'">'+n+'</button>').join('')+'</div>';
+  if(k!=='n')h+='<div class="chips sf96" id="sf96">'+opts.map(v=>cmpBtn96(v,String(v)===String(f),'data-s96f')).join('')+'</div>';
+  const X=S.x96||{};const own=new Set(CAR.cards.map(c=>c.n));
+  const row=(i,rk,x,sub,val)=>'<div class="srow'+(x.c===CAR.club||own.has(x.n)?' me':'')+'"><span class="sr">'+rk+'</span>'+badgeOf(x.c)+'<span class="sn"><b>'+esc(x.n)+'</b><small>'+sub+'</small></span><b class="sv">'+val+'</b></div>';
+  const rank=(L,val,sub,fmt)=>{let last=null,rk=0;return L.map((x,i)=>{const v=val(x);if(v!==last){rk=i+1;last=v}return row(i,rk,x,sub(x),fmt?fmt(x):v)}).join('')};
+  const G=o=>ci?o.g[ci]:o.g[0];const lbl=t=>'<div class="lbl">'+t+' · '+sfName96(f)+' '+seasonLbl(CAR.season)+'</div>';
+  const empty='<div class="note">Noch keine Einträge.</div>';
+  if(k==='g'||k==='a'||k==='sc'){const names=new Set(Object.keys(S.p).concat(Object.keys(X)));let L=[];
+    names.forEach(n=>{const p=S.p[n],x=X[n];const c=(p&&p.c!=null)?p.c:x&&x.c;if(c==null||!inF(c))return;const g=p?G(p):0,a=x?x.a[ci]:0,m=x?x.m[ci]:(p?p.m:0);L.push({n,c,g,a,m,s:p?p.s:0})});
+    const val=k==='g'?x=>x.g:k==='a'?x=>x.a:x=>x.g+x.a;L=L.filter(x=>val(x)>0).sort((a,b)=>val(b)-val(a)||(k==='a'?b.g-a.g:b.a-a.a)||a.m-b.m).slice(0,30);
+    h+=lbl(k==='g'?'Torjäger':k==='a'?'Vorlagengeber':'Scorerliste');
+    h+=L.length?'<div class="slist s96">'+rank(L,val,x=>clubMid(x.c)+' · '+x.m+' Sp.'+(k==='sc'?' · '+x.g+' T · '+x.a+' V':k==='g'&&x.a?' · '+x.a+' V':k==='a'&&x.g?' · '+x.g+' T':''))+'</div>':empty}
+  else if(k==='cs'){let L=Object.entries(S.k).map(([n,o])=>{const x=X[n];return{n,c:o.c,cs:x?x.cs[ci]:0,m:x?x.m[ci]:o.m,sv:o.sv,ga:o.ga,mt:o.m}}).filter(x=>x.c!=null&&inF(x.c)&&x.m>0);
+    L=L.sort((a,b)=>b.cs-a.cs||(a.ga/Math.max(1,a.mt))-(b.ga/Math.max(1,b.mt))||b.sv-a.sv).slice(0,25);
+    h+=lbl('Torhüter · Zu-Null-Spiele');h+=L.length?'<div class="slist s96">'+rank(L,x=>x.cs,x=>clubMid(x.c)+' · '+x.m+' Sp. · '+x.sv+' Paraden · Ø '+(x.ga/Math.max(1,x.mt)).toFixed(1).replace('.',',')+' GT')+'</div>':empty}
+  else if(k==='k'){let L=Object.entries(X).map(([n,x])=>({n,c:x.c,y:x.y[ci],r:x.r[ci],m:x.m[ci]})).filter(x=>x.c!=null&&inF(x.c)&&(x.y||x.r));
+    L=L.sort((a,b)=>(b.r*3+b.y)-(a.r*3+a.y)||b.r-a.r).slice(0,30);
+    h+=lbl('Karten');h+=L.length?'<div class="slist s96">'+rank(L,x=>x.r*3+x.y,x=>clubMid(x.c)+' · '+x.m+' Sp.',x=>'<span class="kc96"><i class="y">'+x.y+'</i>'+(x.r?'<i class="r">'+x.r+'</i>':'')+'</span>')+'</div>':empty}
+  else{const N=CAR.kn70&&CAR.kn70[CAR.season]||{};const L=CAR.cards.map(c=>({c,a:avgN70(c),k:(N[String(c.id)]||[0,0])[1],p:S.p[c.n]||S.k[c.n]})).filter(x=>x.a!=null&&x.k>=1).sort((a,b)=>a.a-b.a);
+    h+='<div class="lbl">kicker-Notenschnitt · Dein Team '+seasonLbl(CAR.season)+'</div>';
+    h+=L.length?'<div class="slist s96">'+L.map((x,i)=>'<div class="srow me"><span class="sr">'+(i+1)+'</span>'+badgeOf(CAR.club)+'<span class="sn"><b>'+esc(x.c.n)+'</b><small>'+x.k+' benotete Spiele · '+(x.p?x.p.m:0)+' Einsätze</small></span><b class="sv"><i class="nt96 n'+Math.round(x.a)+'">'+fmtN70(x.a)+'</i></b></div>').join('')+'</div>':empty;
+    if(CAR.eds70)h+='<button class="big glass press" id="eds70b">󰄗 Elf des '+CAR.eds70.R+'. Spieltags ansehen</button>'}
+  return h}
+/* Transfers als eigene Seite */
+function trHTML96(){return backRow('Mehr')+'<div class="carH">Transfers</div>'+statTrHTML().replace(/<div class="note">Noch keine Transfers[^<]*<\/div>/,'<div class="note">Noch keine Transfers.</div>')}
+V68.add('stat');V68.add('tr96');
+const _carViewHTML96=carViewHTML;carViewHTML=function(){if(typeof CAR!=='undefined'&&CAR){if(carView==='stat')return statHTML96();if(carView==='tr96')return trHTML96()}return _carViewHTML96.apply(this,arguments)};
+/* Erfolge: Saisonverlauf als dritter Reiter */
+const _troView96=troView;troView=function(){if((CAR.msub||'tro')==='verl'){let h=_troView96.apply(this,arguments);const i=h.indexOf('</div></div>',h.indexOf('id="mSub"'));const head=h.slice(0,i+12);
+    return head.replace(/(<button data-v="ach">[^<]*<\/button>)/,'$1<button data-v="verl">Verlauf</button>')+statHistHTML()}
+  return _troView96.apply(this,arguments).replace(/(<div class="seg sm" id="mSub">[\s\S]*?<button data-v="ach">[^<]*<\/button>)/,'$1<button data-v="verl">Verlauf</button>')};
+/* Mehr: Eintrag „Transfers“ unter „Statistik“ */
+const _moreHTML96=moreHTML;moreHTML=function(){let h=_moreHTML96.apply(this,arguments);try{if(h.indexOf('data-go68="tr96"')<0){
+    const tr='<button class="mrow press" data-go68="tr96"><span class="mi"><i class="ic96">⇄</i></span><span class="mt"><b>Transfers</b><small>Wechsel in Deutschland und Europa</small></span><span class="mc">'+ICO.chev+'</span></button>';
+    const m=h.match(/<button class="mrow press" data-more="stat"[\s\S]*?<\/button>/);h=m?h.replace(m[0],m[0]+tr):h.replace('<div class="mlist">','<div class="mlist">'+tr)}
+  h=h.replace(/(data-more="stat"[\s\S]*?<small>)[^<]*(<\/small>)/,'$1Tore, Vorlagen, Scorer, Karten, Noten$2')}catch(e){}return h};
+const _carBind596=carBind5;carBind5=function(){_carBind596.apply(this,arguments);try{
+  if(carView==='stat'){document.querySelectorAll('[data-s96k]').forEach(b=>b.onclick=()=>{CAR.s96k=b.dataset.s96k;sfx('tap');carRender()});
+    document.querySelectorAll('[data-s96f]').forEach(b=>b.onclick=()=>{const v=b.dataset.s96f;CAR.s96f=isNaN(+v)?v:+v;sfx('tap');carRender()});
+    const e=$('#eds70b');if(e)e.onclick=()=>{sfx('tap');edsSheet70()};
+    const on=document.querySelector('#sf96 .on');if(on)on.scrollIntoView({inline:'center',block:'nearest'})}
+  if(carView==='tr96'){document.querySelectorAll('#carBody [data-trf]').forEach(x=>x.onclick=()=>{trF=x.dataset.trf;sfx('tap');carRender()});document.querySelectorAll('#carBody .trow[data-pn]').forEach(x=>x.onclick=()=>plSheet(x.dataset.pn))}
+  if(carView==='tro')subBind('mSub',CAR.msub||'tro',v=>CAR.msub=v)}catch(e){console.error('bind96',e)}};
+
+/* ---------- Liga-Buttons mit Logo und Farbe ---------- */
+/* Top-Ligen */
+const _flHTML96=flHTML68;flHTML68=function(){let h=_flHTML96.apply(this,arguments);try{
+  h=h.replace(/<button class="press( on)?" data-flc="(\w+)">[\s\S]*?<\/button>/g,(m,on,cc)=>'<button class="cb96 press'+(on||'')+'" style="--c:'+cmpCol96(cc)+'" data-flc="'+cc+'">'+cmpLogo96(cc,'xs')+'<span>'+esc(FX_LG[cc]||cc)+'</span></button>');
+  h=h.replace(/(<div class="lbl">)[^\s<]*\s?([^<]*<\/div>)/,(m,a,b)=>a+cmpLogo96(fl68cc&&TOP68.includes(fl68cc)?fl68cc:'EN','xs ib96')+' '+b)}catch(e){}return h};
+/* Tabellen-Walze */
+const _tl93Bar96=tl93Bar;tl93Bar=function(){let h=_tl93Bar96.apply(this,arguments);try{
+  h=h.replace(/<button data-v="([^"]+)" class="(wp93i[^"]*)"[^>]*>([\s\S]*?)<span>/g,(m,v,c)=>{const key=isNaN(+v)?v:+v;return '<button data-v="'+v+'" class="'+c+'" style="--c:'+cmpCol96(key)+'">'+cmpLogo96(key,'wp96')+'<span>'})}catch(e){}return h};
+/* Vereinsauswahl */
+const _carSetupHTML96=carSetupHTML;carSetupHTML=function(){let h=_carSetupHTML96.apply(this,arguments);try{
+  h=h.replace(/(<div class="seg" id="carPL"><div class="hl"><\/div>)((?:<button[^>]*>[^<]*<\/button>)+)/,(m,a,btns)=>a+btns.replace(/<button data-v="(\d)">([^<]*)<\/button>/g,(m,v,t)=>'<button data-v="'+v+'" class="pl96" style="--c:'+cmpCol96(+v)+'">'+cmpLogo96(+v,'xs')+'<span>'+t+'</span></button>'))}catch(e){}return h};
+
+(function(){const st=document.createElement('style');st.textContent=`
+.li96{position:relative;display:inline-grid;place-items:center;flex:none;width:24px;height:24px;border-radius:7px;background:var(--c,#5b6b8a);color:#fff;overflow:hidden;vertical-align:middle;box-shadow:inset 0 0 0 1px rgba(255,255,255,.18)}
+.li96>b{font:900 9px/1 system-ui,-apple-system,sans-serif;letter-spacing:-.2px;color:#fff}
+.li96>img{position:absolute;inset:2px;width:calc(100% - 4px);height:calc(100% - 4px);object-fit:contain;opacity:0;transition:opacity .2s}
+.li96.ok{background:#fff}.li96.ok>b{opacity:0}.li96.ok>img{opacity:1}
+.li96.xs{width:22px;height:22px;border-radius:6px}
+.li96.wp96{width:26px;height:26px;justify-self:center}
+.li96.cl71{width:34px;height:34px;border-radius:9px}.li96.cl71>b{font-size:10px}
+.c68g>span em .li96{width:28px!important;height:28px!important;min-height:0!important;padding:0!important;display:inline-grid!important;border-radius:8px!important;background:var(--c)!important}
+.c68g>span em .li96.ok{background:#fff!important}
+.c68g>span em .li96>b{font-size:9px!important;margin:0!important;padding:0!important;min-width:0!important;width:auto!important;line-height:1!important;opacity:1;position:static!important}
+.c68g>span em .li96{box-sizing:border-box;flex:none!important;max-width:28px!important}
+.c68g>span em .li96.ok>b{opacity:0}
+.li96.ib96{width:20px;height:20px;border-radius:5px;margin-right:4px}
+/* Wettbewerbs-Buttons mit Logo und Farbe */
+.cb96{display:inline-flex!important;align-items:center;gap:8px;flex:none;min-height:44px;padding:0 14px 0 7px!important;border-radius:99px;font-weight:800;font-size:13px!important;color:#fff;background:rgba(255,255,255,.06)!important;border:1px solid rgba(255,255,255,.1)!important;transition:background .2s,box-shadow .2s}
+.cb96>span:last-child{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cb96.on{background:linear-gradient(135deg,var(--c),color-mix(in srgb,var(--c) 55%,#000))!important;border-color:color-mix(in srgb,var(--c) 60%,#fff)!important;box-shadow:0 8px 20px -10px var(--c)}
+.cb96.on .li96:not(.ok){box-shadow:inset 0 0 0 1px rgba(255,255,255,.5)}
+#fl68c .cb96{justify-content:flex-start;width:100%;padding-right:8px!important}
+#sk96,#sf96{display:flex;flex-wrap:nowrap;overflow-x:auto;gap:8px;padding:2px 0 8px;scroll-padding:0 16px}
+#sk96 button{min-height:40px;padding:0 15px;font-size:13.5px}
+#sk96 button.on{background:#fff;color:#0b0f1a;border-color:#fff}
+.s96 .srow .sv{min-width:34px;text-align:right}
+.kc96{display:inline-flex;gap:5px}.kc96 i{display:inline-grid;place-items:center;min-width:20px;height:26px;padding:0 4px;border-radius:4px;font-style:normal;font-size:13px;font-weight:900}
+.kc96 i.y{background:#ffd400;color:#111}.kc96 i.r{background:#e3172d;color:#fff}
+.nt96{font-style:normal;display:inline-block;min-width:40px;padding:3px 7px;border-radius:8px;text-align:center;background:#2fbf5b;color:#fff}
+.nt96.n3{background:#e8c22a;color:#111}.nt96.n4,.nt96.n5,.nt96.n6{background:#e3172d}
+/* Walze */
+.wp93i.mid .li96{box-shadow:0 0 0 2px var(--c),0 4px 14px -4px var(--c)}
+/* Vereinsauswahl */
+#carPL{min-height:62px}#carPL button.pl96{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:11px;line-height:1.1}
+#carPL button.pl96 .li96{width:22px;height:22px}
+${[1,2,3,4,5].map(l=>'#carPL:has(button.on[data-v="'+l+'"]) .hl{background:linear-gradient(135deg,var(--c'+l+'),color-mix(in srgb,var(--c'+l+') 55%,#000))!important;box-shadow:0 8px 20px -10px var(--c'+l+')!important}').join('\n')}
+#carPL{--c1:#d20515;--c2:#a8001c;--c3:#1f3c88;--c4:#0067b1;--c5:#c4161c}
+#carPL button.on{color:#fff!important}
+
+.ic96{font-style:normal;font-size:22px;font-weight:900;color:#8fd3ff}
+.nf96 .li96{width:18px;height:18px;border-radius:5px;margin-right:3px}
+.lg96s.ok{background:#fff!important}.lg96s.ok>b{display:none}.lg96s>img{position:absolute;inset:3px;width:calc(100% - 6px);height:calc(100% - 6px);object-fit:contain}
+`;document.head.appendChild(st)})();
 
 /* ================= Boot ================= */
 {const app=$('#app');const fix=()=>{if(app.scrollTop||app.scrollLeft){app.scrollTop=0;app.scrollLeft=0}if(document.scrollingElement&&(document.scrollingElement.scrollTop||document.scrollingElement.scrollLeft))window.scrollTo(0,0)};app.addEventListener('scroll',fix,{passive:true});window.addEventListener('scroll',fix,{passive:true});setInterval(fix,500)}
